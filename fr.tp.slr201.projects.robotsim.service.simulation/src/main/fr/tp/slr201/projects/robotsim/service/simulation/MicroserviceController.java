@@ -34,14 +34,6 @@ public class MicroserviceController {
     private final InetAddress netAddress = InetAddress.getByName("localhost");
     private final int port = 8080;
 
-    private final PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
-            .allowIfSubType(PositionedShape.class.getPackageName())
-            .allowIfSubType(Component.class.getPackageName())
-            .allowIfSubType(BasicVertex.class.getPackageName())
-            .allowIfSubType(ArrayList.class.getName())
-            .allowIfSubType(LinkedHashSet.class.getName())
-            .build();
-
     public static void main(String[] args) {
         SpringApplication.run(MicroserviceController.class, args);
     }
@@ -82,13 +74,11 @@ public class MicroserviceController {
     }
 
     @GetMapping("/get")
-    public String getFactory(@RequestParam(value = "factoryID", defaultValue = "defaultFactoryID") String factoryID) throws JsonProcessingException {
+    public Factory getFactory(@RequestParam(value = "factoryID", defaultValue = "defaultFactoryID") String factoryID) throws JsonProcessingException {
         LOGGER.info("Retrieving factory with ID " + factoryID + ".");
         LOGGER.info("Factory :" + factories.get(factoryID));
-        final ObjectMapper objectMapper = new ObjectMapper().activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL)
-                .addMixIn(BasicVertex.class, BasicVertexMixin .class);
 
-        return objectMapper.writeValueAsString(factories.get(factoryID));
+        return factories.get(factoryID);
     }
 
     @GetMapping("/stop")
