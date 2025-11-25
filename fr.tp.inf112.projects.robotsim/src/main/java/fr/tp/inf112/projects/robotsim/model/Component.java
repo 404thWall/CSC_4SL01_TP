@@ -2,21 +2,20 @@ package fr.tp.inf112.projects.robotsim.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import fr.tp.inf112.projects.canvas.model.Figure;
 import fr.tp.inf112.projects.canvas.model.Style;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 import fr.tp.inf112.projects.canvas.model.Shape;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class Component implements Figure, Serializable, Runnable {
 	
 	private static final long serialVersionUID = -5960950869184030220L;
 
 	private String id;
 
-    @JsonBackReference("factory-components")
+    //@JsonBackReference("factory-components")
 	private final Factory factory;
 	
 	private final PositionedShape positionedShape;
@@ -59,7 +58,8 @@ public abstract class Component implements Figure, Serializable, Runnable {
 		return shape == null ? null : shape.getPosition();
 	}
 
-	protected Factory getFactory() {
+    @JsonGetter("factory")
+	public Factory getFactory() {
 		return factory;
 	}
 

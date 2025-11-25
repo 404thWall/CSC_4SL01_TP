@@ -5,21 +5,23 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.tp.inf112.projects.robotsim.model.Factory;
 import fr.tp.inf112.projects.robotsim.model.Position;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 import fr.tp.inf112.projects.robotsim.model.shapes.RectangularShape;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements FactoryPathFinder, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3864762720560889146L;
-    @JsonBackReference
+
 	private final Factory factoryModel;
 	
 	private final int resolution;
@@ -214,7 +216,8 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 		
 		return null;
 	}
-	
+
+    @JsonIgnore
 	protected abstract Vertex getVertex(final int xIndex,
 								 		final int yIndex);
 
@@ -244,6 +247,7 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	
 	protected abstract float overlayedSurface(Vertex vertex, 
 											  PositionedShape shape);
-	
+
+    @JsonIgnore
 	protected abstract Iterator<? extends Vertex> getGraphVertexesIterator();
 }

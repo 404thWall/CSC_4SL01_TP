@@ -1,5 +1,7 @@
 package main.fr.tp.slr201.projects.robotsim.service.simulation;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -31,6 +33,7 @@ public class SimulationRegisterModuleConfig {
         objectMapper.activateDefaultTyping(typeValidator,
                 ObjectMapper.DefaultTyping.NON_FINAL)
                 .addMixIn(BasicVertex.class, BasicVertexMixin.class);
+    //            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         return objectMapper;
     }
 }

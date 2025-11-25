@@ -1,11 +1,20 @@
 package fr.tp.inf112.projects.robotsim.persistance;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import fr.tp.inf112.projects.canvas.model.Canvas;
+import fr.tp.inf112.projects.canvas.model.impl.BasicVertex;
+import fr.tp.inf112.projects.robotsim.model.Component;
 import fr.tp.inf112.projects.robotsim.model.Factory;
+import fr.tp.inf112.projects.robotsim.model.shapes.BasicVertexMixin;
+import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 public class RequestProcessor implements Runnable {
     private Socket socket;
@@ -25,7 +34,6 @@ public class RequestProcessor implements Runnable {
             ObjectInputStream objectInputStream = new ObjectInputStream(inpStr);
             Object obj = objectInputStream.readObject();
             if (obj instanceof String string) {
-                System.out.println("Reading" + obj);
                 Canvas ret = this.read(string);
                 System.out.println(ret);
                 OutputStream outStr = socket.getOutputStream();
@@ -61,7 +69,21 @@ public class RequestProcessor implements Runnable {
                 final InputStream bufInputStream = new BufferedInputStream(fileInputStream);
                 final ObjectInputStream objectInputStrteam = new ObjectInputStream(bufInputStream)
         ) {
-            return (Canvas) objectInputStrteam.readObject();
+            Canvas canvasModel = (Canvas) objectInputStrteam.readObject();
+            final PolymorphicTypeValidator typeValidator =
+                    BasicPolymorphicTypeValidator.builder()
+                            .allowIfSubType(PositionedShape.class.getPackageName())
+                            .allowIfSubType(Component.class.getPackageName())
+                            .allowIfSubType(BasicVertex.class.getPackageName())
+                            .allowIfSubType(ArrayList.class.getName())
+                            .allowIfSubType(LinkedHashSet.class.getName())
+                            .build();
+            final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.activateDefaultTyping(typeValidator,
+                            ObjectMapper.DefaultTyping.NON_FINAL)
+                    .addMixIn(BasicVertex.class, BasicVertexMixin.class);
+            System.out.println("Reading factory" + objectMapper.writeValueAsString((Factory)canvasModel));
+            return canvasModel;
         }
         catch (ClassNotFoundException | IOException ex) {
             throw new IOException(ex);
@@ -76,6 +98,19 @@ public class RequestProcessor implements Runnable {
                 final OutputStream bufOutStream = new BufferedOutputStream(fileOutStream);
                 final ObjectOutputStream objOutStream = new ObjectOutputStream(bufOutStream)
         ) {
+            final PolymorphicTypeValidator typeValidator =
+                    BasicPolymorphicTypeValidator.builder()
+                            .allowIfSubType(PositionedShape.class.getPackageName())
+                            .allowIfSubType(Component.class.getPackageName())
+                            .allowIfSubType(BasicVertex.class.getPackageName())
+                            .allowIfSubType(ArrayList.class.getName())
+                            .allowIfSubType(LinkedHashSet.class.getName())
+                            .build();
+            final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.activateDefaultTyping(typeValidator,
+                            ObjectMapper.DefaultTyping.NON_FINAL)
+                    .addMixIn(BasicVertex.class, BasicVertexMixin.class);
+            System.out.println("Saving factory" + objectMapper.writeValueAsString((Factory)canvasModel));
             objOutStream.writeObject(canvasModel);
         }
     }
@@ -85,7 +120,6 @@ public class RequestProcessor implements Runnable {
         //chooser.setFileFilter(fileNameFilter);
         File dir = new File("./");  // current directory
         File[] files = dir.listFiles((d, name) -> name.endsWith(".factory"));
-        System.out.println(Arrays.toString(dir.listFiles()));
         return files;
     }
 

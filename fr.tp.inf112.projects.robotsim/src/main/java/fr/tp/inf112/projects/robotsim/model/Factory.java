@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import fr.tp.inf112.projects.canvas.controller.Observable;
 import fr.tp.inf112.projects.canvas.controller.Observer;
 import fr.tp.inf112.projects.canvas.model.Canvas;
@@ -16,13 +14,15 @@ import fr.tp.inf112.projects.robotsim.model.motion.Motion;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 import fr.tp.inf112.projects.robotsim.model.shapes.RectangularShape;
 
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class Factory extends Component implements Canvas, Observable {
 
 	private static final long serialVersionUID = 5156526483612458192L;
 
 	private static final ComponentStyle DEFAULT = new ComponentStyle(5.0f);
 
-    @JsonManagedReference("factory-components")
+    //@JsonManagedReference("factory-components")
     private final List<Component> components;
     @JsonIgnore
 	private transient List<Observer> observers;
@@ -87,7 +87,8 @@ public class Factory extends Component implements Canvas, Observable {
 		return false;
 	}
 
-        protected List<Component> getComponents() {
+    @JsonGetter("components")
+    public List<Component> getComponents() {
             return components;
         }
 
@@ -106,8 +107,6 @@ public class Factory extends Component implements Canvas, Observable {
 	public boolean isSimulationStarted() {
 		return simulationStarted;
 	}
-
-    private int counter;
 
 	public void startSimulation() {
 		if (!isSimulationStarted()) {

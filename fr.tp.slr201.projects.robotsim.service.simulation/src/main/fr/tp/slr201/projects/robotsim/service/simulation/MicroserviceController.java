@@ -45,7 +45,7 @@ public class MicroserviceController {
     @GetMapping("/start")
     public boolean startSimulation(@RequestParam(value = "factoryID", defaultValue = "defaultFactoryID") String factoryID) {
         LOGGER.info("Attempting to start simulation for factoryID " + factoryID + ".");
-        if (factories.get(factoryID) == null) {
+        if (factories.get(factoryID) == null || true) {
             try (Socket socket = new Socket(netAddress, port)) {
                 OutputStream outStr = socket.getOutputStream();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outStr);

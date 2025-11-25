@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.tp.inf112.projects.canvas.model.Style;
 import fr.tp.inf112.projects.canvas.model.impl.RGBColor;
 import fr.tp.inf112.projects.robotsim.model.motion.Motion;
@@ -15,6 +17,7 @@ import fr.tp.inf112.projects.robotsim.model.shapes.CircularShape;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 import fr.tp.inf112.projects.robotsim.model.shapes.RectangularShape;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class Robot extends Component {
 	
 	private static final long serialVersionUID = -1218857231970296747L;
@@ -28,13 +31,16 @@ public class Robot extends Component {
 	private int speed;
 	
 	private List<Component> targetComponents;
-	
+
+    @JsonIgnore
 	private transient Iterator<Component> targetComponentsIterator;
 	
 	private Component currTargetComponent;
-	
+
+    @JsonIgnore
 	private transient ListIterator<Position> currentPathPositionsIter;
 
+    @JsonIgnore
 	private transient boolean blocked;
 	
 	private Position memorizedTargetPosition;
