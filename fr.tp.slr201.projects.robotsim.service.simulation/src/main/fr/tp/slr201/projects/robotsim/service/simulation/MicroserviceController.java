@@ -1,10 +1,7 @@
 package main.fr.tp.slr201.projects.robotsim.service.simulation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import fr.tp.inf112.projects.canvas.model.impl.BasicVertex;
@@ -25,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +32,7 @@ public class MicroserviceController {
     private static final Logger LOGGER = Logger.getLogger(MicroserviceController.class.getName());
     private HashMap<String, Factory> factories = new HashMap<>();
     private final InetAddress netAddress = InetAddress.getByName("localhost");
-    private final int port = 80;
+    private final int port = 8080;
 
     private final PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
             .allowIfSubType(PositionedShape.class.getPackageName())

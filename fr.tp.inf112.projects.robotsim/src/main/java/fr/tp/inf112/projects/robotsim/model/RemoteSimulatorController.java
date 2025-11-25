@@ -28,7 +28,7 @@ public class RemoteSimulatorController extends SimulatorController {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     private static final Logger LOGGER = Logger.getLogger(RemoteSimulatorController.class.getName());
     private static final String host = "localhost";
-    private static final int port = 81;
+    private static final int port = 8081;
     private boolean running = false;
 
     public RemoteSimulatorController(CanvasPersistenceManager persistenceManager) {

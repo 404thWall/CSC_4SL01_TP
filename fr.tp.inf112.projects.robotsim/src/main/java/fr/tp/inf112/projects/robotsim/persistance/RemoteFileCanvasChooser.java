@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 public class RemoteFileCanvasChooser extends FileCanvasChooser {
 
     private final InetAddress netAddress;
-    private final int port = 80;
+    private final int port = 8080;
     private final Integer askForFiles = 1;
 
     public RemoteFileCanvasChooser(String fileExtension, String documentTypeLabel) {

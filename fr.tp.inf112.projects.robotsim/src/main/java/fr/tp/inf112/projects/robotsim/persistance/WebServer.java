@@ -7,7 +7,7 @@ import java.net.Socket;
 public class WebServer {
     public static void main(String[] args) {
         try (
-                ServerSocket serverSocket = new ServerSocket(80)
+                ServerSocket serverSocket = new ServerSocket(8080)
         ) {
             do {
                 try {

@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 public class RemoteFactoryPersistanceManager extends FactoryPersistenceManager {
     private final InetAddress netAddress;
-    private final int port = 80;
+    private final int port = 8080;
     public RemoteFactoryPersistanceManager(CanvasChooser canvasChooser) {
         super(canvasChooser);
         try {

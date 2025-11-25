@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/fr.tp.slr201.projects.robotsim.service.simulation.iml" filepath="$PROJECT_DIR$/fr.tp.slr201.projects.robotsim.service.simulation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/fr.tp.slr201.projects.robotsim.service.simulation.iml" filepath="$PROJECT_DIR$/.idea/fr.tp.slr201.projects.robotsim.service.simulation.iml" />
     </modules>
   </component>
 </project>
