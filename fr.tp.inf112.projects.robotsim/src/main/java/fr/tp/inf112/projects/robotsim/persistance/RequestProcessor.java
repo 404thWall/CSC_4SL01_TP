@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import fr.tp.inf112.projects.canvas.model.Canvas;
 import fr.tp.inf112.projects.canvas.model.impl.BasicVertex;
+import fr.tp.inf112.projects.robotsim.app.SimulatorApplication;
 import fr.tp.inf112.projects.robotsim.model.Component;
 import fr.tp.inf112.projects.robotsim.model.Factory;
 import fr.tp.inf112.projects.robotsim.model.shapes.BasicVertexMixin;
@@ -15,8 +16,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 
 public class RequestProcessor implements Runnable {
+
+    private static final Logger LOGGER = Logger.getLogger(RequestProcessor.class.getName());
+
     private Socket socket;
 
     public RequestProcessor(Socket socket) {
@@ -35,13 +40,12 @@ public class RequestProcessor implements Runnable {
             Object obj = objectInputStream.readObject();
             if (obj instanceof String string) {
                 Canvas ret = this.read(string);
-                System.out.println(ret);
+                //System.out.println(ret);
                 OutputStream outStr = socket.getOutputStream();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outStr);
                 objectOutputStream.writeObject(ret);
             }
             else if (obj instanceof Factory factory) {
-                System.out.println("Saving Factory");
                 this.persist(factory);
             }
             else if (obj instanceof Integer i) {
@@ -70,19 +74,7 @@ public class RequestProcessor implements Runnable {
                 final ObjectInputStream objectInputStrteam = new ObjectInputStream(bufInputStream)
         ) {
             Canvas canvasModel = (Canvas) objectInputStrteam.readObject();
-            final PolymorphicTypeValidator typeValidator =
-                    BasicPolymorphicTypeValidator.builder()
-                            .allowIfSubType(PositionedShape.class.getPackageName())
-                            .allowIfSubType(Component.class.getPackageName())
-                            .allowIfSubType(BasicVertex.class.getPackageName())
-                            .allowIfSubType(ArrayList.class.getName())
-                            .allowIfSubType(LinkedHashSet.class.getName())
-                            .build();
-            final ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.activateDefaultTyping(typeValidator,
-                            ObjectMapper.DefaultTyping.NON_FINAL)
-                    .addMixIn(BasicVertex.class, BasicVertexMixin.class);
-            System.out.println("Reading factory" + objectMapper.writeValueAsString((Factory)canvasModel));
+            LOGGER.info("Reading factory");
             return canvasModel;
         }
         catch (ClassNotFoundException | IOException ex) {
@@ -110,7 +102,7 @@ public class RequestProcessor implements Runnable {
             objectMapper.activateDefaultTyping(typeValidator,
                             ObjectMapper.DefaultTyping.NON_FINAL)
                     .addMixIn(BasicVertex.class, BasicVertexMixin.class);
-            System.out.println("Saving factory" + objectMapper.writeValueAsString((Factory)canvasModel));
+            LOGGER.info("Saving factory");
             objOutStream.writeObject(canvasModel);
         }
     }

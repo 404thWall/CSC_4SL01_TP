@@ -67,7 +67,7 @@ public class RemoteSimulatorController extends SimulatorController {
 
     @Override
     public void setCanvas(final Canvas canvasModel) {
-        LOGGER.info("Setting new canvas to "+ canvasModel + ".");
+        LOGGER.info("Setting new canvas.");
         final FactoryModelChangedNotifier notifier = ((Factory) getCanvas()).getNotifier() ;
         super.setCanvas(canvasModel);
         LOGGER.info("New canvas set.");
@@ -76,7 +76,7 @@ public class RemoteSimulatorController extends SimulatorController {
     }
 
     public void setCanvas(final String canvasModel) {
-        LOGGER.info("Trying to convert to Factory the json string : " + canvasModel);
+        LOGGER.info("Trying to convert to Factory the json string.");
         final PolymorphicTypeValidator typeValidator =
                 BasicPolymorphicTypeValidator.builder()
                         .allowIfSubType(PositionedShape.class.getPackageName())
@@ -154,7 +154,7 @@ public class RemoteSimulatorController extends SimulatorController {
 
             objectMapper.addMixIn(BasicVertex.class, BasicVertexMixin.class);
             final Factory factory = objectMapper.readValue(response.body(), Factory.class);
-            LOGGER.info("Managed to fetch factory :" + factory);
+            LOGGER.info("Managed to fetch factory.");
             return factory;
         } catch (URISyntaxException | IOException | InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Failed to get remote factory :", e);
