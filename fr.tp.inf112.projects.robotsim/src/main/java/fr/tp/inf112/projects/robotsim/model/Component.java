@@ -15,8 +15,8 @@ public abstract class Component implements Figure, Serializable, Runnable {
 
 	private String id;
 
-    //@JsonBackReference("factory-components")
-	private final Factory factory;
+    @JsonBackReference("factory-components")
+	private Factory factory;
 	
 	private final PositionedShape positionedShape;
 	
@@ -62,6 +62,11 @@ public abstract class Component implements Figure, Serializable, Runnable {
 	public Factory getFactory() {
 		return factory;
 	}
+
+    @JsonSetter("factory")
+    public void setFactory(Factory factory) {
+        this.factory = factory;
+    }
 
     @JsonIgnore
 	@Override

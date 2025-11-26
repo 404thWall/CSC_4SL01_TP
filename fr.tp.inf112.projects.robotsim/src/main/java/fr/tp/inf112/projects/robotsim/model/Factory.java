@@ -22,7 +22,7 @@ public class Factory extends Component implements Canvas, Observable {
 
 	private static final ComponentStyle DEFAULT = new ComponentStyle(5.0f);
 
-    //@JsonManagedReference("factory-components")
+    @JsonManagedReference("factory-components")
     private final List<Component> components;
     @JsonIgnore
 	private transient List<Observer> observers;

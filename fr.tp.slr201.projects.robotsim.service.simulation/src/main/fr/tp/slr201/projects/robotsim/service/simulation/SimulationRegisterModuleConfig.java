@@ -33,7 +33,7 @@ public class SimulationRegisterModuleConfig {
         objectMapper.activateDefaultTyping(typeValidator,
                 ObjectMapper.DefaultTyping.NON_FINAL)
                 .addMixIn(BasicVertex.class, BasicVertexMixin.class);
-    //            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                //.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         return objectMapper;
     }
 }

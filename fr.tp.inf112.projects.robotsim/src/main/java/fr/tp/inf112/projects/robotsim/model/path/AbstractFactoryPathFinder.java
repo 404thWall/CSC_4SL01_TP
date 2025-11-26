@@ -5,10 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import fr.tp.inf112.projects.robotsim.model.Factory;
 import fr.tp.inf112.projects.robotsim.model.Position;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
@@ -18,12 +15,12 @@ import fr.tp.inf112.projects.robotsim.model.shapes.RectangularShape;
 public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements FactoryPathFinder, Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3864762720560889146L;
 
-	private final Factory factoryModel;
-	
+    private Factory factoryModel;
+
 	private final int resolution;
 
     @JsonIgnore
@@ -40,9 +37,16 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
         this(null, 0);
     }
 
+    @JsonGetter("factoryModel")
 	public Factory getFactoryModel() {
 		return factoryModel;
 	}
+
+    @JsonSetter("factoryModel")
+    public void setFactoryModel(Factory factory) {
+        factoryModel = factory;
+        graph = null;
+    }
 
     @JsonGetter("resolution")
 	public int getResolution() {
@@ -52,13 +56,13 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	protected Graph getGraph() {
 		return graph;
 	}
-	
+
 	protected void buildGraph() {
 		if (getGraph() == null) {
 			graph = newGraph();
 			final int xSize = getFactoryModel().getWidth() / getResolution();
 			final int ySize = getFactoryModel().getHeight() / getResolution();
-	
+
 			for (int xIndex = 0; xIndex < xSize; xIndex++) {
 				for (int yIndex = 0; yIndex < ySize; yIndex++) {
 					final int xCoordinate = xIndex * getResolution();
@@ -66,9 +70,9 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 					addVertex(xCoordinate, yCoordinate);
 				}
 			}
-			
+
 			final Iterator<? extends Vertex> vertexesIterator = getGraphVertexesIterator();
-			
+
 			while (vertexesIterator.hasNext()) {
 				final Vertex vertex = vertexesIterator.next();
 				final Set<Vertex> successors = getSuccessors(getxCoordinate(vertex), getyCoordinate(vertex));
@@ -77,11 +81,11 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 					addEdge(vertex, succVertex);
 				}
 			}
-			
+
 			System.out.println(graph.toString());
 		}
 	}
-	
+
 	protected abstract Graph newGraph();
 
 	protected abstract boolean addVertex(int xCoordinate,
@@ -89,7 +93,7 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 
 	protected abstract boolean addEdge(Vertex vertex1,
 									   Vertex vertex2);
-	
+
 	protected abstract int getxCoordinate(Vertex vertex);
 
 	protected abstract int getyCoordinate(Vertex vertex);
@@ -99,53 +103,53 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 									    final int yCoordinate) {
 		final int xIndex = xCoordinate / getResolution();
 		final int yIndex = yCoordinate / getResolution();
-		
+
 		final Set<Vertex> successors = new HashSet<>();
 
 		Vertex succVertex = getBackwardyVertex(xIndex, yIndex);
-		
+
 		if (succVertex != null) {
 			successors.add(succVertex);
 		}
 
 //		succVertex = getForwardxBackwardyVertex(xIndex, yIndex);
-//		
+//
 //		if (succVertex != null) {
 //			successors.add(succVertex);
 //		}
 
 		succVertex = getForwardxVertex(xIndex, yIndex);
-		
+
 		if (succVertex != null) {
 			successors.add(succVertex);
 		}
 
 //		succVertex = getForwardxForwardyVertex(xIndex, yIndex);
-//		
+//
 //		if (succVertex != null) {
 //			successors.add(succVertex);
 //		}
 
 		succVertex = getForwardyVertex(xIndex, yIndex);
-		
+
 		if (succVertex != null) {
 			successors.add(succVertex);
 		}
 
 //		succVertex = getBackwardxForwardyVertex(xIndex, yIndex);
-//		
+//
 //		if (succVertex != null) {
 //			successors.add(succVertex);
 //		}
 
 		succVertex = getBackwardxVertex(xIndex, yIndex);
-		
+
 		if (succVertex != null) {
 			successors.add(succVertex);
 		}
 
 //		succVertex = getBackwardxBackwardyVertex(xIndex, yIndex);
-//		
+//
 //		if (succVertex != null) {
 //			successors.add(succVertex);
 //		}
@@ -157,11 +161,11 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	private Vertex getBackwardxVertex(final int xIndex,
 								      final int yIndex) {
 		final int searchedxIndex = xIndex - 1;
-		
+
 		if (searchedxIndex >= 0) {
 			return getFreeVertex(searchedxIndex, yIndex);
 		}
-		
+
 		return null;
 	}
 
@@ -169,11 +173,11 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	private Vertex getBackwardyVertex(final int xIndex,
 									  final int yIndex) {
 		final int searchedyIndex = yIndex - 1;
-		
+
 		if (searchedyIndex >= 0) {
-			return getFreeVertex(xIndex, searchedyIndex);	
+			return getFreeVertex(xIndex, searchedyIndex);
 		}
-		
+
 		return null;
 	}
 
@@ -181,11 +185,11 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	private Vertex getForwardxVertex(final int xIndex,
 									 final int yIndex) {
 		final int searchedxIndex = xIndex + 1;
-		
+
 		if (searchedxIndex < getFactoryModel().getWidth() / getResolution()) {
 			return getFreeVertex(searchedxIndex, yIndex);
 		}
-		
+
 		return null;
 	}
 
@@ -193,11 +197,11 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 	private Vertex getForwardyVertex(final int xIndex,
 									 final int yIndex) {
 		final int searchedyIndex = yIndex + 1;
-			
+
 		if (searchedyIndex < getFactoryModel().getHeight() / getResolution()) {
 			return getFreeVertex(xIndex, searchedyIndex);
 		}
-		
+
 		return null;
 	}
 
@@ -207,13 +211,13 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
 		final int resolution = getResolution();
 		final int xCoordinate = xIndex * resolution;
 		final int yCoordinate = yIndex * resolution;
-		
+
 		final PositionedShape shape = new RectangularShape(xCoordinate, yCoordinate, resolution, resolution);
-		
+
 		if (!getFactoryModel().hasObstacleAt(shape)) {
 			return getVertex(xIndex, yIndex);
 		}
-		
+
 		return null;
 	}
 
@@ -224,28 +228,28 @@ public abstract class AbstractFactoryPathFinder<Graph, Vertex> implements Factor
     @JsonIgnore
 	protected Vertex getVertex(final Position position) {
 		float currentMaxOverlayedSurface = 0.0f;
-		Vertex maxOverlayedSurfaceVertex = null; 
-		final PositionedShape shape = new RectangularShape(position.getxCoordinate(), 
+		Vertex maxOverlayedSurfaceVertex = null;
+		final PositionedShape shape = new RectangularShape(position.getxCoordinate(),
 														   position.getyCoordinate(),
 														   resolution,
 														   resolution);
-		
+
 		final  Iterator<? extends Vertex> vertexesIterator = getGraphVertexesIterator();
-		
+
 		while (vertexesIterator.hasNext()) {
 			final Vertex vertex = vertexesIterator.next();
 			final float overlayedSurface = overlayedSurface(vertex, shape);
-			
+
 			if (overlayedSurface  > currentMaxOverlayedSurface) {
 				currentMaxOverlayedSurface = overlayedSurface;
 				maxOverlayedSurfaceVertex = vertex;
 			}
 		}
-		
+
 		return maxOverlayedSurfaceVertex;
 	}
-	
-	protected abstract float overlayedSurface(Vertex vertex, 
+
+	protected abstract float overlayedSurface(Vertex vertex,
 											  PositionedShape shape);
 
     @JsonIgnore
