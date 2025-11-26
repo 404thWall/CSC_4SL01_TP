@@ -1,16 +1,13 @@
 package main.fr.tp.slr201.projects.robotsim.service.simulation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import fr.tp.inf112.projects.canvas.model.impl.BasicVertex;
-import fr.tp.inf112.projects.robotsim.model.Component;
 import fr.tp.inf112.projects.robotsim.model.Factory;
-import fr.tp.inf112.projects.robotsim.model.shapes.BasicVertexMixin;
-import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
+import fr.tp.inf112.projects.robotsim.model.notifications.FactoryModelChangedNotifier;
+import fr.tp.inf112.projects.robotsim.model.notifications.KafkaFactoryModelChangeNotifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +16,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,9 +25,12 @@ import java.util.logging.Logger;
 public class MicroserviceController {
 
     private static final Logger LOGGER = Logger.getLogger(MicroserviceController.class.getName());
-    private HashMap<String, Factory> factories = new HashMap<>();
+    private final HashMap<String, Factory> factories = new HashMap<>();
     private final InetAddress netAddress = InetAddress.getByName("localhost");
     private final int port = 8080;
+
+    @Autowired
+    private KafkaTemplate<String, Factory> simulationEventTemplate;
 
     public static void main(String[] args) {
         SpringApplication.run(MicroserviceController.class, args);
@@ -45,7 +43,7 @@ public class MicroserviceController {
     @GetMapping("/start")
     public boolean startSimulation(@RequestParam(value = "factoryID", defaultValue = "defaultFactoryID") String factoryID) {
         LOGGER.info("Attempting to start simulation for factoryID " + factoryID + ".");
-        if (factories.get(factoryID) == null || true) {
+        if (factories.get(factoryID) == null) {
             try (Socket socket = new Socket(netAddress, port)) {
                 OutputStream outStr = socket.getOutputStream();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outStr);
@@ -55,6 +53,8 @@ public class MicroserviceController {
                 ObjectInputStream objectInputStream = new ObjectInputStream(inpStr);
 
                 Factory currentFactory = (Factory) objectInputStream.readObject();
+                final FactoryModelChangedNotifier notifier = new KafkaFactoryModelChangeNotifier(currentFactory, simulationEventTemplate);
+                currentFactory.setNotifier(notifier);
                 LOGGER.info("Starting the simulation of factory " + factoryID + ".");
 
                 currentFactory.startSimulation();

@@ -1,5 +1,6 @@
 package fr.tp.inf112.projects.robotsim.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -8,6 +9,8 @@ import fr.tp.inf112.projects.canvas.model.Canvas;
 import fr.tp.inf112.projects.canvas.model.CanvasPersistenceManager;
 import fr.tp.inf112.projects.canvas.model.impl.BasicVertex;
 import fr.tp.inf112.projects.robotsim.app.SimulatorController;
+import fr.tp.inf112.projects.robotsim.model.notifications.FactoryModelChangedNotifier;
+import fr.tp.inf112.projects.robotsim.model.notifications.FactorySimulationEventConsumer;
 import fr.tp.inf112.projects.robotsim.model.shapes.BasicVertexMixin;
 import fr.tp.inf112.projects.robotsim.model.shapes.PositionedShape;
 
@@ -20,8 +23,10 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class RemoteSimulatorController extends SimulatorController {
 
@@ -48,18 +53,49 @@ public class RemoteSimulatorController extends SimulatorController {
         }
     }
 
+
+//    public void setCanvasDeprecated(final Canvas canvasModel) {
+//        LOGGER.info("Setting new canvas to "+ canvasModel + ".");
+//        final List<Observer> observers = ((Factory) getCanvas()).getObservers();
+//        super.setCanvas(canvasModel);
+//        LOGGER.info("New canvas set.");
+//        for (final Observer observer : observers) {
+//            ((Factory) getCanvas()).addObserver(observer);
+//        }
+//        ((Factory) getCanvas()).notifyObservers();
+//    }
+
     @Override
     public void setCanvas(final Canvas canvasModel) {
         LOGGER.info("Setting new canvas to "+ canvasModel + ".");
-        final List<Observer> observers = ((Factory) getCanvas()).getObservers();
+        final FactoryModelChangedNotifier notifier = ((Factory) getCanvas()).getNotifier() ;
         super.setCanvas(canvasModel);
         LOGGER.info("New canvas set.");
-        for (final Observer observer : observers) {
-            ((Factory) getCanvas()).addObserver(observer);
-        }
+        ((Factory) getCanvas()).setNotifier(notifier);
         ((Factory) getCanvas()).notifyObservers();
     }
 
+    public void setCanvas(final String canvasModel) {
+        LOGGER.info("Trying to convert to Factory the json string : " + canvasModel);
+        final PolymorphicTypeValidator typeValidator =
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfSubType(PositionedShape.class.getPackageName())
+                        .allowIfSubType(Component.class.getPackageName())
+                        .allowIfSubType(BasicVertex.class.getPackageName())
+                        .allowIfSubType(ArrayList.class.getName())
+                        .allowIfSubType(LinkedHashSet.class.getName())
+                        .build();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.activateDefaultTyping(typeValidator,
+                        ObjectMapper.DefaultTyping.NON_FINAL)
+                .addMixIn(BasicVertex.class, BasicVertexMixin.class);
+        try {
+            setCanvas(objectMapper.readValue(canvasModel, Factory.class));
+        } catch (JsonProcessingException e) {
+            LOGGER.log(Level.SEVERE, "An error occured while converting from Json to Factory");
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void startAnimation() {
@@ -71,7 +107,11 @@ public class RemoteSimulatorController extends SimulatorController {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.info("Response from microservice "+response);
             running=true;
-            updateViewer();
+            //updateViewer();
+            LOGGER.info("Attempting to start consuming messages");
+            FactorySimulationEventConsumer consumer = new FactorySimulationEventConsumer(this);
+            consumer.consumeMessages();
+            LOGGER.info("Consumer launched");
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -176,8 +176,8 @@ public class Robot extends Component {
         int currentY = this.getPosition().getyCoordinate();
         int delta = this.getSpeed();
         Position newPos1 = new Position(currentX + delta, currentY);
-        Position newPos2 = new Position(currentX - delta, currentY);
-        Position newPos3 = new Position(currentX, currentY + delta);
+        Position newPos2 = new Position(currentX, currentY + delta);
+        Position newPos3 = new Position(currentX - delta, currentY);
         Position newPos4 = new Position(currentX, currentY - delta);
         if (isPositionValid(newPos1)) { return newPos1;}
         if (isPositionValid(newPos2)) { return newPos2;}

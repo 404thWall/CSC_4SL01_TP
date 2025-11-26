@@ -17,6 +17,11 @@
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/Room.java
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/TestRobotSimSerializationJSON.java
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/motion/Motion.java
+/home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/notifications/FactoryModelChangedNotifier.java
+/home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/notifications/FactorySimulationEventConsumer.java
+/home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/notifications/KafkaFactoryModelChangeNotifier.java
+/home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/notifications/LocalFactoryModelChangedNotifier.java
+/home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/notifications/SimulationServiceUtils.java
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/path/AbstractFactoryPathFinder.java
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/path/CustomDijkstraFactoryPathFinder.java
 /home/eloan/Desktop/CSC_4SL01_TP/fr.tp.inf112.projects.robotsim/src/main/java/fr/tp/inf112/projects/robotsim/model/path/FactoryPathFinder.java
